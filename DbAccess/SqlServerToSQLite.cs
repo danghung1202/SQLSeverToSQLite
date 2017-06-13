@@ -60,7 +60,7 @@ namespace DbAccess
             // Clear cancelled flag
             _cancelled = false;
 
-            WaitCallback wc = new WaitCallback(delegate(object state)
+            WaitCallback wc = new WaitCallback(delegate (object state)
             {
                 try
                 {
@@ -270,6 +270,8 @@ namespace DbAccess
                         return ParseStringAsGuid((string)val);
                     if (val is byte[])
                         return ParseBlobAsGuid((byte[])val);
+                    if (val is Guid)
+                        return val.ToString();
                     break;
 
                 case DbType.Binary:
@@ -949,6 +951,7 @@ namespace DbAccess
                     // SQLite establishes type affinity by searching certain strings
                     // in the type name. For example - everything containing the string
                     // 'int' in its type name will be assigned an INTEGER affinity
+
                     if (dataType == "timestamp")
                         dataType = "blob";
                     else if (dataType == "datetime" || dataType == "smalldatetime" || dataType == "date" || dataType == "datetime2" || dataType == "time")
@@ -963,17 +966,24 @@ namespace DbAccess
                     else if (dataType == "tinyint")
                         dataType = "smallint";
                     else if (dataType == "bigint")
-                        dataType = "integer";
+                        dataType = "bigint";
                     else if (dataType == "sql_variant")
                         dataType = "blob";
                     else if (dataType == "xml")
                         dataType = "varchar";
                     else if (dataType == "uniqueidentifier")
-                        dataType = "guid";
+                    {
+                        dataType = "varchar";
+                        length = 128;
+                    }
                     else if (dataType == "ntext")
                         dataType = "text";
                     else if (dataType == "nchar")
                         dataType = "char";
+                    else if (dataType.Equals(SqlServerType.Geography) || dataType.Equals(SqlServerType.Geometry))
+                    {
+                        dataType = "text";
+                    }
 
                     if (dataType == "bit" || dataType == "int")
                     {
@@ -1091,7 +1101,8 @@ namespace DbAccess
                 dataType == "smallmoney" || dataType == "money" ||
                 dataType == "tinyint" || dataType == "uniqueidentifier" ||
                 dataType == "xml" || dataType == "sql_variant" || dataType == "datetime2" || dataType == "date" || dataType == "time" ||
-                dataType == "decimal" || dataType == "nchar" || dataType == "datetime")
+                dataType == "decimal" || dataType == "nchar" || dataType == "datetime" ||
+                dataType == SqlServerType.Geography || dataType == SqlServerType.Geometry)
                 return;
             throw new ApplicationException("Validation failed for data type [" + dataType + "]");
         }
