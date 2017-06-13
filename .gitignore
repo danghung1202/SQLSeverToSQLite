@@ -1,0 +1,27 @@
+# Build result and npm
+Converter/bin/
+Converter/obj/
+DbAccess/bin/
+DbAccess/obj/
+
+# ReSharper is a .NET coding add-in
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# =========================
+# Windows detritus
+# =========================
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Visual Studio 2015 settings folder
+.vs/
+.vscode/
